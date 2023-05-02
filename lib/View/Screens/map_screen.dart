@@ -1,10 +1,164 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
-class MapScreen extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:tow_tracking/View/Widgets/custom_textfield.dart';
+import 'package:tow_tracking/theme/tow_tracking_color.dart';
+import 'package:tow_tracking/theme/tow_tracking_textstyle.dart';
+
+class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
 
   @override
+  State<MapScreen> createState() => _MapScreenState();
+}
+
+class _MapScreenState extends State<MapScreen> {
+  Position? position;
+  CameraPosition? myPos;
+  final Completer<GoogleMapController> _controller =
+      Completer<GoogleMapController>();
+
+  Future<CameraPosition?> getPosition() async {
+    try {
+      position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+    } catch (e) {
+      print(e);
+    }
+    if (position != null) {
+      myPos = CameraPosition(
+        target: LatLng(position!.latitude, position!.longitude),
+        zoom: 19.151926040649414,
+      );
+    }
+    return myPos;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    final size = MediaQuery.of(context).size;
+    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+    return Scaffold(
+      key: _scaffoldKey,
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: const BoxDecoration(
+                color: TowTrackingColors.secondary,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/images/image.png',
+                    fit: BoxFit.contain,
+                  ),
+                  Column(
+                    children: [
+                      Text('Leslie Alexander',
+                          style: TowTrackingTextStyles.HeadlineMedium.copyWith(
+                            color: Colors.white,
+                          )),
+                      Text('View Details',
+                          style: TowTrackingTextStyles.HeadlineMedium.copyWith(
+                            color: Colors.white,
+                          )),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('Customer Account',
+                  style: TowTrackingTextStyles.HeadlineMedium),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(Icons.person_4),
+              title: const Text('Admin Account',
+                  style: TowTrackingTextStyles.HeadlineMedium),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Settings',
+                  style: TowTrackingTextStyles.HeadlineMedium),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(Icons.info),
+              title: const Text('About us',
+                  style: TowTrackingTextStyles.HeadlineMedium),
+              onTap: () {},
+            ),
+          ],
+        ),
+      ),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kTextTabBarHeight * 1.5),
+        child: AppBar(
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(20),
+            bottomRight: Radius.circular(20),
+          )),
+          leadingWidth: size.width,
+          backgroundColor: Colors.white,
+          leading: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Flexible(
+                flex: 1,
+                child: IconButton(
+                  icon: const Icon(Icons.menu, color: Colors.black),
+                  onPressed: () {
+                    _scaffoldKey.currentState!.openDrawer();
+                  },
+                ),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              const Flexible(
+                flex: 9,
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Search',
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    errorBorder: InputBorder.none,
+                    disabledBorder: InputBorder.none,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      body: FutureBuilder(
+        future: getPosition(),
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          if (snapshot.hasData) {
+            return GoogleMap(
+              initialCameraPosition: snapshot.data,
+              onMapCreated: (GoogleMapController controller) {
+                _controller.complete(controller);
+              },
+            );
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
+      ),
+    );
   }
 }

@@ -32,7 +32,7 @@ class HomePage extends StatelessWidget {
   void navigateToRegister(context) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => const RegisterScreen(),
+        builder: (context) => RegisterScreen(),
       ),
     );
   }
