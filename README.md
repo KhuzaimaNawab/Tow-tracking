@@ -1,16 +1,18 @@
-# tow_tracking
+# Tow Tracking App
 
-A new Flutter project.
+The Tow Tracking App is a mobile application developed using the Flutter framework, which provides a real-time tracking system for tow trucks. The app is designed to track the location of tow trucks in real-time and help users locate and monitor the tow trucks.
+## Features
 
-## Getting Started
+1. You can check closest tow service.
+2. You can find our details in Contact now.
+3. Monitoring of tow truck location and direction of travel.
+4. Integration with Google Maps for accurate and reliable mapping.
 
-This project is a starting point for a Flutter application.
+Design inspired by : https://www.figma.com/file/iM25JvoPUmhwBnsTMWYefq/Tow-Tracking-(Community)?type=design&node-id=13-2&t=xVCQYU0GwteMwTtf-0
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Screenshots
+![alt text](screenshots/1.jpeg)
+![alt text](screenshots/2.jpeg)
+![alt text](screenshots/3.jpeg)
+![alt text](screenshots/4.jpeg)
+![alt text](screenshots/5.jpeg)
