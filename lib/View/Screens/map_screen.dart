@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:tow_tracking/View/Widgets/custom_textfield.dart';
 import 'package:tow_tracking/theme/tow_tracking_color.dart';
 import 'package:tow_tracking/theme/tow_tracking_textstyle.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -17,10 +17,14 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   Position? position;
   CameraPosition? myPos;
+  Marker? marker;
+
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
 
   Future<CameraPosition?> getPosition() async {
+    LocationPermission permission;
+    permission = await Geolocator.requestPermission();
     try {
       position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
@@ -30,10 +34,22 @@ class _MapScreenState extends State<MapScreen> {
     if (position != null) {
       myPos = CameraPosition(
         target: LatLng(position!.latitude, position!.longitude),
-        zoom: 19.151926040649414,
+        zoom: 15,
       );
     }
     return myPos;
+  }
+
+  Future<Marker?> getMarker() async {
+    BitmapDescriptor myIcon = await BitmapDescriptor.fromAssetImage(
+        ImageConfiguration.empty, 'assets/images/tow-truck.png');
+    marker = Marker(
+      markerId: MarkerId('aaa'),
+      icon: myIcon,
+      position: myPos!.target,
+    );
+    print(marker);
+    return marker;
   }
 
   @override
@@ -143,11 +159,17 @@ class _MapScreenState extends State<MapScreen> {
         ),
       ),
       body: FutureBuilder(
-        future: getPosition(),
+        future: Future.wait([
+          getPosition(),
+          getMarker(),
+        ]),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
             return GoogleMap(
-              initialCameraPosition: snapshot.data,
+              initialCameraPosition: snapshot.data[0],
+              markers: {
+                snapshot.data[1],
+              },
               onMapCreated: (GoogleMapController controller) {
                 _controller.complete(controller);
               },
